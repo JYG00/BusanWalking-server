@@ -7,6 +7,7 @@ const Post = require("./models/Post");
 
 server.use(express.json());
 
+// 회원가입
 server.post("/join", (req, res) => {
   const newUser = new User();
   newUser.email = req.body.email;
@@ -20,6 +21,7 @@ server.post("/join", (req, res) => {
     .catch((err) => res.json({ message: "User was not successfully created" }));
 });
 
+// 로그인
 server.post("/login", async (req, res) => {
   try {
     const users = await User.find({
@@ -66,15 +68,28 @@ server.get("/post/read", async (req, res) => {
 });
 
 //게시글 수정
-server.put("/post/update", async(req, res) => {
+server.put("/post/update/:id", async (req, res) => {
   try {
-    const post = await Post.updateOne()
+    const post = await Post.findByIdAndUpdate(req.params.id, req.body);
+    res.send(post);
   } catch (err) {
     console.log(err);
   }
 });
 
 //게시글 삭제
+server.delete("/post/delete/:id", async (req, res) => {
+  try {
+    const post = await Post.findByIdAndDelete(req.params.id, req.body);
+    if (!post) {
+      res.status(404).send;
+    } else {
+      res.send(post);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 server.listen(3000, (err) => {
   if (err) {
